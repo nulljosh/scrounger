@@ -332,3 +332,10 @@ test("dropParts removes accessories and wanted ads unless the query asks for the
   assert.equal(dropParts(items, "bike rack").length, 2);
   assert.equal(dropParts(items, "").length, 4);
 });
+
+test("dropParts catches seats, pumps and trailers but keeps a bike that comes with new tires", () => {
+  const items = [{ title: "Double Action Hand Bike Pump" }, { title: "KONA bike bicycle seat" }, { title: "Chariot Bike Trailer" },
+    { title: "Supercycle Mnt.bike, 24 inch" }, { title: "Trek FX 2, new tires and lights" }, { title: "2009 Corolla with new brakes, good tires" }];
+  assert.deepEqual(dropParts(items, "bike").map((i) => i.title), ["Supercycle Mnt.bike, 24 inch", "Trek FX 2, new tires and lights", "2009 Corolla with new brakes, good tires"]);
+  assert.deepEqual(dropParts(items, "car").map((i) => i.title).at(-1), "2009 Corolla with new brakes, good tires");
+});

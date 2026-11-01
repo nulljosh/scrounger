@@ -53,4 +53,3 @@ Skipped: chat, payments, seller profiles, shipping (Scrounger is a browser, not 
 | One-word store name (Scrounge was taken, now Scrounger everywhere) | - | S | done 2026-10-28 |
 
 ## Ingested 2026-10-30
-- [ ] Deal vote is harsh: on Vancouver cars and bikes it drops most of the 30 cheapest as junk, so unvetted listings fill the top. Tune JUNK_VALUE (3.5) or vet a bigger pool, from a day of real searches

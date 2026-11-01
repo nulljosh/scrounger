@@ -68,11 +68,16 @@ export function rankByDeal(items) {
 // Small models wave accessories through, so catch the obvious ones by word:
 // a listing for "pedals" or "rack" is not what someone searching "bike" wants
 // unless they typed that word themselves. ponytail: fixed list, grow it from real misses.
-const PARTS = /\b(pedals?|racks?|stems?|handlebars?|kickstands?|carriers?|tires?|tubes?|fenders?|helmets?|saddles?|cases?|covers?|chargers?|cables?|mounts?|straps?|parts?|stands?|wanted|iso|looking for|wtb)\b/gi;
+const PARTS = /\b(pedals?|racks?|stems?|derailleurs?|chains?|cranks?|cassettes?|hoists?|handlebars?|kickstands?|carriers?|tires?|tubes?|fenders?|helmets?|saddles?|seats?|pumps?|tape|panniers?|trailers?|locks?|lights?|baskets?|bags?|grips?|cases?|covers?|chargers?|cables?|mounts?|straps?|parts?|stands?|wanted|iso|looking for|wtb)\b/gi;
+// "new tires and lights", "with rack": a feature of the thing itself, not a part for sale (Vancouver cars and bikes, 2026-11-01).
+const FEATURE = /\b(new|with|w\/|incl|including|includes|plus|good|great)\b[^,.;:|]*$/i;   // anywhere earlier in the same clause
 export function dropParts(items, query = "") {
   const q = String(query).toLowerCase();
   if (!q.trim()) return items;
-  return items.filter((i) => ![...String(i.title).matchAll(PARTS)].some((m) => !q.includes(m[1].toLowerCase().replace(/s$/, ""))));
+  return items.filter((i) => {
+    const t = String(i.title);
+    return ![...t.matchAll(PARTS)].some((m) => !q.includes(m[1].toLowerCase().replace(/s$/, "")) && !FEATURE.test(t.slice(0, m.index)));
+  });
 }
 
 const VALUE_POOL = 30;
@@ -89,7 +94,8 @@ const MODELS = [
 ];
 // Mean value at or below this means the models agree it isn't the item itself
 // (wanted ad, parts, scam): it is dropped from deal results, not just ranked low.
-const JUNK_VALUE = 3.5;
+// 3.5 dropped 29 of 30 vetted Vancouver bikes on 2026-11-01: 3 is "weak or unclear" in the prompt, not junk.
+const JUNK_VALUE = 2.5;
 
 // AI is a garnish: never let a slow model hold the search hostage.
 const withTimeout = (p, ms = AI_TIMEOUT_MS) =>
