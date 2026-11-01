@@ -1,3 +1,4 @@
+<img src="icon.svg" width="80">
 
 Formerly Curbfind and Scrounge.
 
