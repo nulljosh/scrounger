@@ -7,6 +7,7 @@
 <meta name="description" content="A faster way to browse local classifieds.">
 <link rel="stylesheet" href="https://jaybulb.com/tokens.css">
 <link rel="stylesheet" href="devices.css">
+<link rel="stylesheet" href="hero.css?v=1">
 <link rel="icon" href="icon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="icon-180.png">
 <style>
@@ -21,28 +22,13 @@ body{margin:0;font-family:var(--font-body);background:var(--bg);color:var(--text
 main{max-width:var(--column-width);margin:0 auto;padding:0 20px 64px;scroll-snap-align:start}
 
 .hero{position:relative;isolation:isolate;overflow:hidden;text-align:center;display:flex;align-items:center;justify-content:center;height:100vh;height:100dvh;width:100%;background:var(--curb-tint);scroll-snap-align:start}
-/* the listing grid as a halftone print behind the copy, inked in the brand colour */
-.hero-art{position:absolute;inset:0;z-index:0;pointer-events:none;background:var(--curb);opacity:var(--art-o,.32);-webkit-mask:url(hero-art.png) center/cover no-repeat;mask:url(hero-art.png) center/cover no-repeat}
-.hero-float{transition:opacity .3s}
 .hero .inner{position:relative;z-index:2;max-width:var(--column-width);margin:0 auto;padding:0 20px}
 .hero-scroll{position:absolute;bottom:24px;left:50%;transform:translateX(-50%);z-index:2;color:var(--curb-deep);opacity:.6;animation:bounce 1.8s ease-in-out infinite;transition:opacity .3s}
 .hero-scroll svg{width:22px;height:22px;display:block}
 @keyframes bounce{0%,100%{transform:translate(-50%,0)}50%{transform:translate(-50%,8px)}}
 @media (prefers-reduced-motion: reduce){.hero-scroll{animation:none}}
 
-/* A drifting field of curb-side icons -- price tags, houses, boxes, cars --
-   the same technique as nimble's hero: two nested elements so drift (translate)
-   and bob (rotate) don't fight over `transform` on one node. */
-.hero-float{position:absolute;inset:-48px;z-index:0;color:rgba(140,60,0,0.35);pointer-events:none;user-select:none}
-.float{position:absolute;width:var(--size);height:var(--size);margin:calc(var(--size) / -2) 0 0 calc(var(--size) / -2);animation:drift var(--dur,16s) ease-in-out var(--delay,0s) infinite alternate}
-.float svg{display:block;width:100%;height:100%;fill:none;stroke:currentColor;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round;animation:bob var(--bdur,12s) ease-in-out var(--bdelay,0s) infinite alternate}
-@keyframes drift{to{transform:translate(var(--dx,0px),var(--dy,0px))}}
-@keyframes bob{from{transform:rotate(calc(var(--rot,0deg) * -1))}to{transform:rotate(var(--rot,0deg))}}
-@media (prefers-reduced-motion: reduce){.float,.float svg{animation:none}}
 
-.hero::after{content:'';position:absolute;inset:0;z-index:1;pointer-events:none;
-  background:radial-gradient(ellipse 52% 46% at 50% 48%, var(--curb-tint) 30%, transparent 78%),
-             linear-gradient(var(--curb-tint), transparent 16%, transparent 84%, var(--curb-tint))}
 
 /* the hero leads with the line that sells; the name sits in the label above it */
 .hero .inner{max-width:1000px}
@@ -85,7 +71,6 @@ footer.foot .foot-rule>:first-child{order:0}footer.foot .foot-rule>:last-child{o
 html.js .reveal{opacity:0;transform:translateY(20px)}
 html.js .reveal.in-view{opacity:1;transform:translateY(0);transition:opacity .6s ease-out,transform .6s ease-out}
 @media (prefers-reduced-motion: reduce){ html.js .reveal{opacity:1;transform:none} }
-@media (prefers-reduced-motion: no-preference){ .hero-float{will-change:transform} }
 </style>
     <meta property="og:type" content="website">
     <meta property="og:image" content="https://scrounger.jaybulb.com/screenshot.jpg">
@@ -96,35 +81,10 @@ html.js .reveal.in-view{opacity:1;transform:translateY(0);transition:opacity .6s
   </head>
 <body id="top">
 
-<!-- Icon sprite for the hero field. Sized 0 rather than display:none, which
-     would stop <use> from rendering the symbols in some browsers. -->
-<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
-  <symbol id="i-tag" viewBox="0 0 24 24">
-    <path vector-effect="non-scaling-stroke" d="M11.5 3H6a1 1 0 0 0-1 1v5.5a1 1 0 0 0 .3.7l9 9a1 1 0 0 0 1.4 0l5.5-5.5a1 1 0 0 0 0-1.4l-9-9a1 1 0 0 0-.7-.3Z"/>
-    <circle vector-effect="non-scaling-stroke" cx="8.5" cy="8.5" r="1.25"/>
-  </symbol>
-  <symbol id="i-house" viewBox="0 0 24 24">
-    <path vector-effect="non-scaling-stroke" d="M3 11.5 12 4l9 7.5"/>
-    <path vector-effect="non-scaling-stroke" d="M5.5 10v9.5a1 1 0 0 0 1 1H17.5a1 1 0 0 0 1-1V10"/>
-    <path vector-effect="non-scaling-stroke" d="M10 20.5V14h4v6.5"/>
-  </symbol>
-  <symbol id="i-box" viewBox="0 0 24 24">
-    <path vector-effect="non-scaling-stroke" d="M3 8.5 12 4l9 4.5-9 4.5-9-4.5Z"/>
-    <path vector-effect="non-scaling-stroke" d="M3 8.5V16l9 4.5 9-4.5V8.5"/>
-    <path vector-effect="non-scaling-stroke" d="M12 13v7.5"/>
-  </symbol>
-  <symbol id="i-car" viewBox="0 0 24 24">
-    <path vector-effect="non-scaling-stroke" d="M4 16V12l2-5h12l2 5v4"/>
-    <path vector-effect="non-scaling-stroke" d="M4 16h16"/>
-    <circle vector-effect="non-scaling-stroke" cx="7.5" cy="16.5" r="1.5"/>
-    <circle vector-effect="non-scaling-stroke" cx="16.5" cy="16.5" r="1.5"/>
-  </symbol>
-</svg>
 
 <nav class="nav" aria-label="Main"><a class="nav-brand" href="#top"><img src="icon.svg" alt="">Scrounger</a><a class="cta" href="/app/">Get started</a></nav>
 <header class="hero" id="hero">
-  <div class="hero-art" aria-hidden="true"></div>
-  <div class="hero-float" id="heroFloat" aria-hidden="true"></div>
+  <div class="hero-bg" aria-hidden="true" inert><div class="wall" id="lwall"></div></div>
   <div class="inner">
     <p class="hero-label">Scrounger, a Craigslist browser</p>
     <h1 class="hero-h1">Craigslist, without the clutter.</h1>
@@ -206,46 +166,6 @@ or connected to craigslist. Replying to a posting opens the original site.</smal
   </div>
 </footer>
 <script>
-// Field of price tags, houses, boxes and cars drifting behind the hero.
-(function () {
-  var field = document.getElementById('heroFloat');
-  var hero = document.querySelector('.hero');
-  if (!field || !hero) return;
-
-  var icons = ['i-tag', 'i-house', 'i-box', 'i-car'];
-  var rand = function (a, b) { return a + Math.random() * (b - a); };
-  var narrow = window.innerWidth < 640;
-  var count = narrow ? 8 : 14;
-  var w = hero.offsetWidth, h = hero.offsetHeight;
-
-  for (var i = 0; i < count; i++) {
-    var el = document.createElement('div');
-    el.className = 'float';
-    var size = rand(22, 40);
-    el.style.setProperty('--size', size.toFixed(0) + 'px');
-    el.style.left = rand(0, w) + 'px';
-    el.style.top = rand(0, h) + 'px';
-    var dx = rand(12, 26) * (Math.random() < 0.5 ? -1 : 1);
-    var dy = rand(10, 22) * (Math.random() < 0.5 ? -1 : 1);
-    el.style.setProperty('--dx', dx.toFixed(1) + 'px');
-    el.style.setProperty('--dy', dy.toFixed(1) + 'px');
-    el.style.setProperty('--dur', rand(12, 20).toFixed(1) + 's');
-    el.style.setProperty('--delay', (-rand(0, 18)).toFixed(1) + 's');
-    el.style.setProperty('--rot', rand(6, 16).toFixed(0) + 'deg');
-    el.style.setProperty('--bdur', rand(9, 15).toFixed(1) + 's');
-    el.style.setProperty('--bdelay', (-rand(0, 12)).toFixed(1) + 's');
-
-    var svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-    svg.setAttribute('viewBox', '0 0 24 24');
-    var use = document.createElementNS('http://www.w3.org/2000/svg', 'use');
-    use.setAttributeNS('http://www.w3.org/1999/xlink', 'href', '#' + icons[i % icons.length]);
-    svg.appendChild(use);
-    el.appendChild(svg);
-    field.appendChild(el);
-  }
-})();
-</script>
-<script>
 // Scroll-triggered reveal for the feature list
 (function () {
   var els = document.querySelectorAll('.reveal');
@@ -255,13 +175,6 @@ or connected to craigslist. Replying to a posting opens the original site.</smal
   }, { threshold: 0.1 });
   els.forEach(function (el) { io.observe(el); });
 })();
-// Subtle parallax on the drifting icon field behind the hero
-(function () {
-  var field = document.getElementById('heroFloat');
-  if (!field || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-  var ticking = false;
-  function apply() { field.style.transform = 'translateY(' + (window.scrollY * 0.12) + 'px)'; ticking = false; }
-  window.addEventListener('scroll', function () { if (!ticking) { requestAnimationFrame(apply); ticking = true; } }, { passive: true });
-})();
 </script>
+<script src="hero.js?v=1" defer></script>
 </body></html>
