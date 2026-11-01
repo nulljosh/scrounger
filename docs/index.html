@@ -48,8 +48,10 @@ main{max-width:var(--column-width);margin:0 auto;padding:0 20px 64px;scroll-snap
   background:radial-gradient(ellipse 56% 50% at 50% 46%, var(--curb-tint) 20%, transparent 76%),
              linear-gradient(var(--curb-tint), transparent 14%, transparent 86%, var(--curb-tint))}
 
-h1{font-size:34px;letter-spacing:-.02em;margin:0 0 6px}
-h1 b{border-bottom:4px solid var(--curb);padding-bottom:2px}
+/* the hero leads with the line that sells; the name sits in the label above it */
+.hero .inner{max-width:1000px}
+.hero-label{font-size:13px;line-height:16px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--curb-deep);margin:0 0 16px}
+.hero-h1{font-size:clamp(40px,7vw,104px);line-height:.95;font-weight:700;letter-spacing:-.035em;text-wrap:balance;margin:0 0 24px}
 p.lede{font-size:18px;color:var(--color-soft);margin:0 0 28px;max-width:44ch;margin-left:auto;margin-right:auto}
 a.cta{display:inline-block;background:var(--curb);color:#fff;border:1px solid var(--curb);padding:10px 20px;text-decoration:none;font-weight:600}
 a.cta:hover{background:var(--curb-deep);border-color:var(--curb-deep)}
@@ -119,8 +121,9 @@ html.js .reveal.in-view{opacity:1;transform:translateY(0);transition:opacity .6s
   <iframe class="hero-demo" src="/app/" title="" tabindex="-1" aria-hidden="true"></iframe>
   <div class="hero-float" id="heroFloat" aria-hidden="true"></div>
   <div class="inner">
-    <h1><b>Scrounger</b></h1>
-    <p class="lede">Browse Craigslist listings without the clutter. Search any city, filter by price, save what you're watching.</p>
+    <p class="hero-label">Scrounger, a Craigslist browser</p>
+    <h1 class="hero-h1">Craigslist, without the clutter.</h1>
+    <p class="lede">Search any city, filter by price, save what you're watching.</p>
     <p><a class="cta" href="/app/" id="ctaOpen">Open Scrounger</a></p>
   </div>
   <div class="hero-scroll" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></div>
