@@ -76,3 +76,6 @@ footer a{color:inherit}
 .minimap .pin:hover{transform:scale(1.2);background:var(--btn)}
 .minimap .credit{position:absolute;right:8px;bottom:8px;font-size:11px;line-height:16px;padding:0 8px;border-radius:999px;background:var(--bg);color:var(--text2)}
 @media (prefers-color-scheme:dark){:root:not([data-theme=light]) .minimap img{filter:invert(1) hue-rotate(180deg) brightness(.85)}}
+
+/* visually hidden, still read aloud */
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
