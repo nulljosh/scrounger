@@ -53,4 +53,5 @@ Skipped: chat, payments, seller profiles, shipping (Scrounger is a browser, not 
 | One-word store name (Scrounge was taken, now Scrounger everywhere) | - | S | done 2026-10-28 |
 
 ## Ingested 2026-10-30
-- [ ] Run it for a day and see if it finds any deals
+- [x] (11-01: first run found every AI vote timing out, so "deals" were cheapest-first with no reasons. Fixed: token cap, compact replies, real ids in the prompt, 8 s budget, the slow 8b model dropped, reasons written after the vote. Votes and reasons work live now) Run it for a day and see if it finds any deals
+- [ ] Deal vote is harsh: on Vancouver cars and bikes it drops most of the 30 cheapest as junk, so unvetted listings fill the top. Tune JUNK_VALUE (3.5) or vet a bigger pool, from a day of real searches

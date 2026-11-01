@@ -75,12 +75,15 @@ export function dropParts(items, query = "") {
   return items.filter((i) => ![...String(i.title).matchAll(PARTS)].some((m) => !q.includes(m[1].toLowerCase().replace(/s$/, ""))));
 }
 
-const VALUE_POOL = 20;
-const AI_TIMEOUT_MS = 5000;
+const VALUE_POOL = 30;
+// ponytail: measured 2026-11-01 on a 20-listing pool: llama 3.2 3b about 1 s, qwen3 30b about 5 s with /no_think,
+// llama 3.1 8b about 8 s (dropped). The old 5 s cap timed every vote out, so deals fell back to price alone.
+const AI_TIMEOUT_MS = 8000;
+// Workers AI stops at 256 tokens unless told otherwise, which cut the JSON off mid-list.
+const MAX_TOKENS = 600;
 // Several models vote and their scores are averaged, so one model's bad day
 // can't sink a search. A retired name just drops out of the vote (allSettled).
 const MODELS = [
-  "@cf/meta/llama-3.1-8b-instruct-fp8",
   "@cf/meta/llama-3.2-3b-instruct",
   "@cf/qwen/qwen3-30b-a3b-fp8",
 ];
@@ -96,10 +99,11 @@ const withTimeout = (p, ms = AI_TIMEOUT_MS) =>
 // Titles are hostile input; the reply is only ever a clamped number or capped
 // string keyed by an id we sent.
 async function scoreWith(model, prompt, ids, env) {
-  const res = await withTimeout(env.AI.run(model, { messages: [{ role: "user", content: prompt }] }));
+  const res = await withTimeout(env.AI.run(model, { messages: [{ role: "user", content: prompt }], max_tokens: MAX_TOKENS }));
   // Models drift on shape (array, bare objects, flat {id: n} map), so read every
   // flat {...} object on its own instead of trusting the outer JSON.
-  const text = String(res?.response ?? "");
+  // qwen hands back already-parsed JSON instead of a string.
+  const text = typeof res?.response === "string" ? res.response : JSON.stringify(res?.response ?? "");
   const entries = [];
   const reasonOf = {};
   for (const m of text.match(/\{[^{}]*\}/g) ?? []) {
@@ -132,7 +136,7 @@ export async function rerankByValue(items, env, query = "") {
   const ids = new Set(pool.map((i) => String(i.id)));
   const list = pool.map((i) => `${i.id}: "${i.title.slice(0, 200).replace(/"/g, "'")}" - ${i.priceString}`).join("\n");
   const want = query ? `The buyer searched for "${String(query).slice(0, 80).replace(/"/g, "'")}". ` : "";
-  const prompt = `${want}Rate each classifieds listing 0-10 for bang for the buck. 0-2: scam, stolen, wanted ad, or anything that is not the item itself (parts, components, tires, pedals, clothing, accessories, cases, broken or for-parts). 3-5: weak or unclear. 6-8: solid value. 9-10: clearly underpriced for what it is. Reply as JSON only, no other text: [{"id": "...", "value": 7}].\n\n${list}`;
+  const prompt = `${want}Rate each classifieds listing 0-10 for bang for the buck. 0-2: scam, stolen, wanted ad, or anything that is not the item itself (parts, components, tires, pedals, clothing, accessories, cases, broken or for-parts). 3-5: weak or unclear. 6-8: solid value. 9-10: clearly underpriced for what it is. Reply with one JSON object mapping each id to its score and nothing else, like {"${pool[0].id}": 7, "${pool[1].id}": 2}, one entry for every id below. /no_think\n\n${list}`;
   const votes = (await Promise.allSettled(MODELS.map((m) => scoreWith(m, prompt, ids, env))))
     .flatMap((r) => {
       if (r.status === "fulfilled") return [r.value];
@@ -172,10 +176,11 @@ export async function addDealReasons(items, env) {
   // title can do is waste the model's own output on a useless reason.
   const list = top.map((i) => `${i.id}: "${i.title.slice(0, 200).replace(/"/g, "'")}" - ${i.priceString}`).join("\n");
   try {
-    const res = await withTimeout(env.AI.run("@cf/meta/llama-3.1-8b-instruct-fp8", {
+    const res = await withTimeout(env.AI.run("@cf/meta/llama-3.2-3b-instruct", {
+      max_tokens: MAX_TOKENS,
       messages: [{
         role: "user",
-        content: `These are classifieds listings, cheapest-relative-to-market first. In one short punchy phrase each (under 8 words), say why it looks like a good deal. Reply as JSON only, no other text: {"id": "reason"}.\n\n${list}`,
+        content: `These are classifieds listings, cheapest-relative-to-market first. In one short punchy phrase each (under 8 words), say why it looks like a good deal. Reply with one JSON object keyed by the ids below and nothing else, like {"${top[0].id}": "half the usual price"}.\n\n${list}`,
       }],
     }));
     // Asked for a flat {"id": "reason"} map, but models routinely ignore that
@@ -184,7 +189,7 @@ export async function addDealReasons(items, env) {
     // greedily (its own brackets bound it); the flat map is brace-only with
     // no nesting, so a non-greedy match's first "}" is always its real end.
     // Either way this drops any trailing prose the model tacks on.
-    const text = String(res?.response ?? "");
+    const text = typeof res?.response === "string" ? res.response : JSON.stringify(res?.response ?? "");
     const arrayMatch = text.match(/\[[\s\S]*\]/);
     const parsed = JSON.parse(arrayMatch?.[0] ?? text.match(/\{[\s\S]*?\}/)?.[0] ?? "{}");
 
@@ -237,12 +242,10 @@ async function search(url, env) {
   const decoded = decodeSearch(payload);
   let items = decoded.items;
   if (dealSort) {
-    // Value scoring and the one-line reasons are independent model calls, so run
-    // them side by side: wall time is the slower one, not the sum.
-    const ranked = rankByDeal(dropParts(items, p.get("q")));
-    const [reasoned, valued] = await Promise.all([addDealReasons(ranked, env), rerankByValue(ranked, env, p.get("q"))]);
-    const reasonOf = new Map(reasoned.filter((i) => i.dealReason).map((i) => [i.id, i.dealReason]));
-    items = valued.map((i) => (reasonOf.has(i.id) ? { ...i, dealReason: reasonOf.get(i.id) } : i));
+    // Reasons come after the value vote, on the listings that survived it: written for the pre-vote top five,
+    // they mostly landed on parts the vote then dropped. The fast 3b model keeps the extra wait near a second.
+    const valued = await rerankByValue(rankByDeal(dropParts(items, p.get("q"))), env, p.get("q"));
+    items = await addDealReasons(valued, env);
   }
   return json({ ...decoded, items, city, offset });
 }
