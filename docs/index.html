@@ -78,7 +78,8 @@ html.js .reveal.in-view{opacity:1;transform:translateY(0);transition:opacity .6s
     <meta property="og:description" content="A faster way to browse local classifieds.">
     <meta property="og:url" content="https://scrounger.jaybulb.com/">
     <meta name="twitter:card" content="summary_large_image">
-  </head>
+  <style>/* footer glyph band (footer-band.js) */ .word-band{color:var(--curb);position:relative;width:100%;margin:32px 0 0;height:clamp(120px,16vw,220px)} .word-canvas{position:absolute;inset:0;width:100%;height:100%;display:none} .word-band.live .word-canvas{display:block}</style>
+</head>
 <body id="top">
 
 
@@ -161,6 +162,7 @@ or connected to craigslist. Replying to a posting opens the original site.</smal
       </ul>
     </div>
   </nav>
+  <div class="word-band" aria-hidden="true"><canvas class="word-canvas"></canvas></div>
   <div class="foot-bar">
     <p class="foot-meta">Scrounger &middot; MIT License &middot; &copy; 2026 Joshua Trommel &middot; Made with <span aria-hidden="true">&hearts;</span> in Vancouver, BC</p>
   </div>
@@ -177,4 +179,5 @@ or connected to craigslist. Replying to a posting opens the original site.</smal
 })();
 </script>
 <script src="hero.js?v=1" defer></script>
+<script src="footer-band.js" defer></script>
 </body></html>
