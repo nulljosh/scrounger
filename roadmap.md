@@ -28,7 +28,6 @@ Plan: `~/.claude/plans/magical-noodling-candy.md`.
 ## Ingested 2026-10-05
 
 ## Ingested 2026-10-16
-- [ ] (blocked: Apple review, iOS 1.0.0 WAITING_FOR_REVIEW 2026-11-01) Needs iOS ship (macOS live, iOS 1.0.0 waiting). (screenshot: notes/attachments/2026-10-16/app-store-releases-1.png)
   - 2026-10-21 check: iOS 1.0.0 is PREPARE_FOR_SUBMISSION with submission a5b53544 UNRESOLVED_ISSUES (rejected 2026-10-05 under 4.3 spam + 4.2.6; the nine-question reply went out 2026-10-05 18:00, no resubmit). Blocked on Joshua: `asc web auth login` (2FA) so `asc web review show --app 6809031662` can read whether Apple answered.   - 2026-10-26 recheck: `asc web review show` still fails, Apple sign-in returns 503/throttled and asc will not retry before 12:20Z; still needs Joshua to run `asc web auth login` once the throttle clears.
   Never resubmit unchanged; if Apple holds the line, it needs real new iOS-only features first.
 
