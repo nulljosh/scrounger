@@ -55,3 +55,17 @@ Skipped: chat, payments, seller profiles, shipping (Scrounger is a browser, not 
 
 ## Ingested 2026-11-06
 - [ ] Scrounger: needs better UI/UX. QA apps (macOS was approved). Name, brand kit and landing are already done.
+
+## UI/UX QA pass (2026-11-06, no code shipped)
+
+Measured on the live web app (headless Chrome, 1280 and 390 wide, light and dark). No horizontal scroll, and no console errors on load, search, detail or empty results. Open gaps, all small:
+
+| Gap | Where it hurts | Size | Status |
+|---|---|---|---|
+| Phone header is 437px before the first card (72px tagline, controls wrap into 5 rows). Put the secondary buttons in one scrolling row and hide the tagline under 600px | web phone | S | open |
+| Detail on phone is a centred dialog with a ~150px lead photo. Make it a bottom sheet with a full-width lead photo | web phone | S | open |
+| Grid goes blank while searching ("Searching..." text only). Show plain grey placeholder cards until results land, clear them on error | web, iOS, macOS, KMP | S | open |
+| Empty result says only "No results." Add the next step (broaden the words or try another city). Same string in iOS, macOS and KMP | web, iOS, macOS, KMP | S | open |
+| Desktop sticky header is 253px tall with the tagline. Collapse to one row once the page scrolls | web desktop | S | open |
+
+Not yet compared against App Store screenshots this pass, so no competitor claims are made here. The service worker cache (web/sw.js, scrounger-v4) must be bumped with any app.js or app.css change.
