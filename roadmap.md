@@ -69,3 +69,6 @@ Measured on the live web app (headless Chrome, 1280 and 390 wide, light and dark
 | Desktop sticky header is 253px tall with the tagline. Collapse to one row once the page scrolls | web desktop | S | open |
 
 Not yet compared against App Store screenshots this pass, so no competitor claims are made here. The service worker cache (web/sw.js, scrounger-v4) must be bumped with any app.js or app.css change.
+
+## Stashed 2026-11-07
+- [ ] Next App Store version: the Mac 1.0.0 support and marketing URLs still point at curbfind.heyitsmejosh.com (heyitsmejosh.com lapsed, the link is dead; App Review can reject on it). Set both to https://scrounger.jaybulb.com in the new version's localizations. Live versions cannot be edited.
