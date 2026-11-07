@@ -52,3 +52,6 @@ Skipped: chat, payments, seller profiles, shipping (Scrounger is a browser, not 
 | One-word store name (Scrounge was taken, now Scrounger everywhere) | - | S | done 2026-10-28 |
 
 ## Ingested 2026-10-30
+
+## Ingested 2026-11-06
+- [ ] Scrounger (note said Curbfind, the old name): needs better name and brand kit, design system etc. Landing page etc. Needs better UI/UX etc. QA apps (macOS was approved).
