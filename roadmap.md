@@ -54,4 +54,4 @@ Skipped: chat, payments, seller profiles, shipping (Scrounger is a browser, not 
 ## Ingested 2026-10-30
 
 ## Ingested 2026-11-06
-- [ ] Scrounger (note said Curbfind, the old name): needs better name and brand kit, design system etc. Landing page etc. Needs better UI/UX etc. QA apps (macOS was approved).
+- [ ] Scrounger: needs better UI/UX. QA apps (macOS was approved). Name, brand kit and landing are already done.
