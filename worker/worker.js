@@ -89,8 +89,8 @@ const MAX_TOKENS = 600;
 // Several models vote and their scores are averaged, so one model's bad day
 // can't sink a search. A retired name just drops out of the vote (allSettled).
 const MODELS = [
-  "@cf/meta/llama-3.2-3b-instruct",
-  "@cf/qwen/qwen3-30b-a3b-fp8",
+  "@cf/meta/llama-3.3-70b-instruct-fp8-fast",
+  "@cf/mistralai/mistral-small-3.1-24b-instruct",
 ];
 // Mean value at or below this means the models agree it isn't the item itself
 // (wanted ad, parts, scam): it is dropped from deal results, not just ranked low.
@@ -109,7 +109,8 @@ async function scoreWith(model, prompt, ids, env) {
   // Models drift on shape (array, bare objects, flat {id: n} map), so read every
   // flat {...} object on its own instead of trusting the outer JSON.
   // qwen hands back already-parsed JSON instead of a string.
-  const text = typeof res?.response === "string" ? res.response : JSON.stringify(res?.response ?? "");
+  const raw = res?.response ?? res?.choices?.[0]?.message?.content ?? "";  // newer models answer in the OpenAI shape
+  const text = typeof raw === "string" ? raw : JSON.stringify(raw);
   const entries = [];
   const reasonOf = {};
   for (const m of text.match(/\{[^{}]*\}/g) ?? []) {
@@ -182,7 +183,7 @@ export async function addDealReasons(items, env) {
   // title can do is waste the model's own output on a useless reason.
   const list = top.map((i) => `${i.id}: "${i.title.slice(0, 200).replace(/"/g, "'")}" - ${i.priceString}`).join("\n");
   try {
-    const res = await withTimeout(env.AI.run("@cf/meta/llama-3.2-3b-instruct", {
+    const res = await withTimeout(env.AI.run("@cf/meta/llama-3.3-70b-instruct-fp8-fast", {
       max_tokens: MAX_TOKENS,
       messages: [{
         role: "user",
@@ -195,7 +196,8 @@ export async function addDealReasons(items, env) {
     // greedily (its own brackets bound it); the flat map is brace-only with
     // no nesting, so a non-greedy match's first "}" is always its real end.
     // Either way this drops any trailing prose the model tacks on.
-    const text = typeof res?.response === "string" ? res.response : JSON.stringify(res?.response ?? "");
+    const raw = res?.response ?? res?.choices?.[0]?.message?.content ?? "";  // newer models answer in the OpenAI shape
+  const text = typeof raw === "string" ? raw : JSON.stringify(raw);
     const arrayMatch = text.match(/\[[\s\S]*\]/);
     const parsed = JSON.parse(arrayMatch?.[0] ?? text.match(/\{[\s\S]*?\}/)?.[0] ?? "{}");
 
