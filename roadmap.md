@@ -74,4 +74,3 @@ Not yet compared against App Store screenshots this pass, so no competitor claim
 - [ ] Next App Store version: the Mac 1.0.0 support and marketing URLs still point at curbfind.heyitsmejosh.com (heyitsmejosh.com lapsed, the link is dead; App Review can reject on it). Set both to https://scrounger.jaybulb.com in the new version's localizations. Live versions cannot be edited.
 
 ## Ingested 2026-11-08
-- [x] Cloudflare retires `@cf/meta/llama-3.2-3b-instruct` and `@cf/qwen/qwen3-30b-a3b-fp8` (worker/worker.js:92-93,185) on Workers AI on 2026-11-20. Move to a replacement before then: Cloudflare suggests `@cf/google/gemma-4-26b-a4b-it` or `@cf/qwen/qwen3.8-27b` for small models, `@cf/deepseek-ai/deepseek-v4.1-flash-1017` or `@cf/zai-org/glm-5.3` for bigger ones. Changelog: https://developers.cloudflare.com/changelog/post/2026-11-05-planned-model-deprecations/ Done 2026-11-08: votes now `llama-3.3-70b-instruct-fp8-fast` and `mistral-small-3.1-24b-instruct`, deployed.
