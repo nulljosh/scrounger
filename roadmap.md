@@ -74,3 +74,6 @@ Not yet compared against App Store screenshots this pass, so no competitor claim
 - [ ] Next App Store version: the Mac 1.0.0 support and marketing URLs still point at curbfind.heyitsmejosh.com (heyitsmejosh.com lapsed, the link is dead; App Review can reject on it). Set both to https://scrounger.jaybulb.com in the new version's localizations. Live versions cannot be edited.
 
 ## Ingested 2026-11-08
+
+## Ingested 2026-11-13
+- [ ] Note was the title only ("Scrounger"), written in a run of App Review status checks. Report its review status. Last known (root roadmap, 2026-11-08): waiting on Apple. Could not re-pull today: the asc API is blocked by an unaccepted Apple agreement (see vault blocked-on-joshua.md).
